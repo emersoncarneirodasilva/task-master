@@ -70,9 +70,11 @@ export class UserController {
     try {
       const userId = req.user!.userId;
 
-      await this.userService.delete(userId);
+      const deletedUser = await this.userService.delete(userId);
 
-      res.status(204).send();
+      res
+        .status(204)
+        .json({ message: "Usuário deletado com sucesso!", deletedUser });
     } catch (error) {
       next(error);
     }

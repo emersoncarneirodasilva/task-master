@@ -7,9 +7,13 @@ export class TaskController {
   createTask: Handler = async (req, res, next) => {
     try {
       const userId = req.user!.userId;
-      const body = req.body; // OBS: Lembrar de fazer validação com Zod
+      const { categoryName, categoryId, ...taskData } = req.body;
 
-      const task = await this.taskService.createTask(userId, body);
+      const task = await this.taskService.createTask(userId, {
+        ...taskData,
+        categoryName,
+        categoryId,
+      });
 
       res.status(201).json(task);
     } catch (error) {

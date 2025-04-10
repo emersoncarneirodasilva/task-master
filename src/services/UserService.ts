@@ -5,6 +5,7 @@ import {
   CreateUserAttributes,
   UserRepository,
 } from "../repositories/contracts/UserRepository";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
@@ -61,13 +62,19 @@ export class UserService {
     id: number,
     attributes: { name?: string; email?: string }
   ) {
-    const updatedUser = await this.userRepository.update(id, attributes);
+    try {
+      const updatedUser = await this.userRepository.update(id, attributes);
 
-    if (!updatedUser) {
-      throw new HttpError("Usuário não encontrado!", 404);
+      return updatedUser;
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        throw new HttpError("Usuário não encontrado!", 404);
+      }
+      throw error;
     }
-
-    return updatedUser;
   }
 
   async changePassword(id: number, newPassword: string, oldPassword: string) {
@@ -93,12 +100,18 @@ export class UserService {
   }
 
   async delete(id: number) {
-    const user = await this.userRepository.delete(id);
+    try {
+      const user = await this.userRepository.delete(id);
 
-    if (!user) {
-      throw new HttpError("Usuário não encontrado!", 404);
+      return user;
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        throw new HttpError("Usuário não encontrado!", 404);
+      }
+      throw error;
     }
-
-    return user;
   }
 }

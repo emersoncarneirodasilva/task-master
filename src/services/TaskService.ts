@@ -19,7 +19,6 @@ export class TaskService {
       throw new HttpError("Data inválida fornecida para o prazo.", 400);
     }
 
-    // Chama o repositório para criar a tarefa
     return await this.taskRepository.create(userId, {
       ...attributes,
       deadline,
@@ -51,13 +50,14 @@ export class TaskService {
     userId: number,
     attributes: Partial<CreateTaskAttributes>
   ) {
-    // Se 'deadline' estiver presente nos atributos e for uma string, converta para Date
+    // Se "deadline" estiver presente nos atributos e for uma string, converta para Date
     if (attributes.deadline && typeof attributes.deadline === "string") {
       attributes.deadline = new Date(attributes.deadline);
     }
 
     try {
       const task = await this.taskRepository.update(id, userId, attributes);
+
       return task;
     } catch (error) {
       if (

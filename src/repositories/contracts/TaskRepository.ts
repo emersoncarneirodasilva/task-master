@@ -7,6 +7,7 @@ export interface CreateTaskAttributes {
   status: Status;
   deadline: Date | string;
   categoryId?: number;
+  categoryName?: string;
 }
 
 export interface TaskRepository {

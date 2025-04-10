@@ -6,11 +6,30 @@ import {
 import { prisma } from "../../database";
 
 export class PrismaTaskRepository implements TaskRepository {
-  create(userId: number, attributes: CreateTaskAttributes): Promise<Task> {
+  async create(
+    userId: number,
+    attributes: CreateTaskAttributes
+  ): Promise<Task> {
+    const { categoryId, categoryName, ...taskData } = attributes;
+
     return prisma.task.create({
       data: {
-        ...attributes,
-        userId,
+        ...taskData,
+        user: {
+          connect: { id: userId },
+        },
+        category: categoryName
+          ? {
+              connectOrCreate: {
+                where: { name_userId: { name: categoryName, userId } },
+                create: { name: categoryName, userId },
+              },
+            }
+          : categoryId
+          ? {
+              connect: { id: categoryId },
+            }
+          : undefined,
       },
     });
   }
