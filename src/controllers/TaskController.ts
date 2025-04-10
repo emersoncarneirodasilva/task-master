@@ -30,22 +30,17 @@ export class TaskController {
     try {
       const userId = req.user!.userId;
 
-      const tasks = await this.taskService.getAllTasks(userId);
+      const { search, status, priority, page = "1", limit = "10" } = req.query;
+
+      const tasks = await this.taskService.getAllTasks(userId, {
+        search: search?.toString(),
+        status: status?.toString(),
+        priority: priority?.toString(),
+        page: Number(page),
+        perPage: Number(limit),
+      });
 
       res.status(200).json(tasks);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  getTaskById: Handler = async (req, res, next) => {
-    try {
-      const userId = req.user!.userId;
-      const taskId = Number(req.params.id);
-
-      const task = await this.taskService.getTaskById(taskId, userId);
-
-      res.status(200).json(task);
     } catch (error) {
       next(error);
     }

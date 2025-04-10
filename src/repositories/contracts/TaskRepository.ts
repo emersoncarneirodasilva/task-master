@@ -10,10 +10,28 @@ export interface CreateTaskAttributes {
   categoryName?: string;
 }
 
+export interface OptionsToSearchAndFilter {
+  page?: number;
+  perPage?: number;
+  search?: string;
+  status?: string;
+  priority?: string;
+}
+
+export interface PaginatedTasks {
+  tasks: Task[];
+  totalTasks: number;
+  totalPages: number;
+  currentPage: number;
+  perPage: number;
+}
+
 export interface TaskRepository {
   create: (userId: number, attributes: CreateTaskAttributes) => Promise<Task>;
-  findAllByUserId: (userId: number) => Promise<Task[]>;
-  findById: (id: number, userId: number) => Promise<Task | null>;
+  findAllByUserId: (
+    userId: number,
+    options: OptionsToSearchAndFilter
+  ) => Promise<PaginatedTasks>;
   update: (
     id: number,
     userId: number,

@@ -2,6 +2,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { HttpError } from "../errors/HttpError";
 import {
   CreateTaskAttributes,
+  OptionsToSearchAndFilter,
   TaskRepository,
 } from "../repositories/contracts/TaskRepository";
 
@@ -25,24 +26,14 @@ export class TaskService {
     });
   }
 
-  async getAllTasks(userId: number) {
-    const tasks = await this.taskRepository.findAllByUserId(userId);
+  async getAllTasks(userId: number, options: OptionsToSearchAndFilter) {
+    const tasks = await this.taskRepository.findAllByUserId(userId, options);
 
-    if (!tasks || tasks.length === 0) {
+    if (!tasks) {
       throw new HttpError("Nenhuma tarefa encontrada!", 404);
     }
 
     return tasks;
-  }
-
-  async getTaskById(id: number, userId: number) {
-    const task = await this.taskRepository.findById(id, userId);
-
-    if (!task) {
-      throw new HttpError("Tarefa não encontrada!", 404);
-    }
-
-    return task;
   }
 
   async updateTask(

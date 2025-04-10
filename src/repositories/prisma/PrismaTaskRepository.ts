@@ -1,9 +1,12 @@
-import { Task } from "@prisma/client";
+import { prisma } from "../../database";
+import { Priority, Status, Task } from "@prisma/client";
 import {
   CreateTaskAttributes,
+  OptionsToSearchAndFilter,
+  PaginatedTasks,
   TaskRepository,
 } from "../contracts/TaskRepository";
-import { prisma } from "../../database";
+import filterEnumValues from "../../utils/filterEnumValues";
 
 export class PrismaTaskRepository implements TaskRepository {
   async create(
@@ -34,25 +37,55 @@ export class PrismaTaskRepository implements TaskRepository {
     });
   }
 
-  findAllByUserId(userId: number): Promise<Task[]> {
-    return prisma.task.findMany({ where: { userId } });
+  async findAllByUserId(
+    userId: number,
+    options: OptionsToSearchAndFilter
+  ): Promise<PaginatedTasks> {
+    const { page = 1, perPage = 10, search, status, priority } = options || {};
+
+    const filteredStatus = status
+      ? filterEnumValues(status, Status)
+      : undefined;
+    const filteredPriority = priority
+      ? filterEnumValues(priority, Priority)
+      : undefined;
+
+    const filters = Object.fromEntries(
+      Object.entries({
+        userId,
+        title: search ? { contains: search, mode: "insensitive" } : undefined,
+        status: filteredStatus ? { in: filteredStatus } : undefined,
+        priority: filteredPriority ? { in: filteredPriority } : undefined,
+      }).filter(([_, value]) => value !== undefined)
+    );
+
+    const [tasks, totalTasks] = await Promise.all([
+      prisma.task.findMany({
+        where: filters,
+        skip: (page - 1) * perPage,
+        take: perPage,
+        orderBy: { deadline: "desc" },
+      }),
+      prisma.task.count({ where: filters }),
+    ]);
+
+    const totalPages = Math.ceil(totalTasks / perPage);
+
+    return {
+      tasks,
+      totalTasks,
+      totalPages,
+      currentPage: page,
+      perPage,
+    };
   }
 
-  findById(id: number, userId: number): Promise<Task | null> {
-    return prisma.task.findFirst({
-      where: {
-        id: id,
-        userId: userId,
-      },
-    });
-  }
-
-  update(
+  async update(
     id: number,
     userId: number,
     attributes: Partial<CreateTaskAttributes>
   ): Promise<Task | null> {
-    return prisma.task.update({
+    return await prisma.task.update({
       where: {
         id: id,
         userId: userId,
@@ -61,8 +94,8 @@ export class PrismaTaskRepository implements TaskRepository {
     });
   }
 
-  delete(id: number, userId: number): Promise<Task | null> {
-    return prisma.task.delete({
+  async delete(id: number, userId: number): Promise<Task | null> {
+    return await prisma.task.delete({
       where: {
         id: id,
         userId: userId,

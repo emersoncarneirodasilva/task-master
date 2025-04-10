@@ -6,29 +6,29 @@ import {
 } from "../contracts/UserRepository";
 
 export class PrismaUserRepository implements UserRepository {
-  create(attributes: CreateUserAttributes): Promise<User> {
-    return prisma.user.create({ data: attributes });
+  async create(attributes: CreateUserAttributes): Promise<User> {
+    return await prisma.user.create({ data: attributes });
   }
 
-  findByEmail(email: string): Promise<User | null> {
-    return prisma.user.findUnique({ where: { email } });
+  async findByEmail(email: string): Promise<User | null> {
+    return await prisma.user.findUnique({ where: { email } });
   }
 
-  findById(id: number): Promise<User | null> {
-    return prisma.user.findUnique({ where: { id } });
+  async findById(id: number): Promise<User | null> {
+    return await prisma.user.findUnique({ where: { id } });
   }
 
-  update(
+  async update(
     id: number,
     attributes: Partial<CreateUserAttributes>
   ): Promise<User | null> {
-    return prisma.user.update({
+    return await prisma.user.update({
       where: { id },
       data: attributes,
     });
   }
 
-  delete(id: number): Promise<User | null> {
-    return prisma.user.delete({ where: { id } });
+  async delete(id: number): Promise<User | null> {
+    return await prisma.user.delete({ where: { id } });
   }
 }

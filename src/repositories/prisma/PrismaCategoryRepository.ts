@@ -6,8 +6,8 @@ import {
 } from "../contracts/CategoryRepository";
 
 export class PrismaCategoryRepository implements CategoryRepository {
-  create(attributes: CreateCategoryAttributes): Promise<Category> {
-    return prisma.category.create({
+  async create(attributes: CreateCategoryAttributes): Promise<Category> {
+    return await prisma.category.create({
       data: {
         name: attributes.name,
         userId: attributes.userId,
@@ -15,8 +15,8 @@ export class PrismaCategoryRepository implements CategoryRepository {
     });
   }
 
-  findById(userId: number, id: number): Promise<Category | null> {
-    return prisma.category.findFirst({
+  async findById(userId: number, id: number): Promise<Category | null> {
+    return await prisma.category.findFirst({
       where: {
         id,
         userId,
@@ -27,8 +27,10 @@ export class PrismaCategoryRepository implements CategoryRepository {
     });
   }
 
-  findByName(attributes: CreateCategoryAttributes): Promise<Category | null> {
-    return prisma.category.findFirst({
+  async findByName(
+    attributes: CreateCategoryAttributes
+  ): Promise<Category | null> {
+    return await prisma.category.findFirst({
       where: {
         name: attributes.name,
         userId: attributes.userId,
@@ -39,8 +41,8 @@ export class PrismaCategoryRepository implements CategoryRepository {
     });
   }
 
-  findAllByUserId(userId: number): Promise<Category[]> {
-    return prisma.category.findMany({
+  async findAllByUserId(userId: number): Promise<Category[]> {
+    return await prisma.category.findMany({
       where: { userId },
       include: {
         tasks: true,
@@ -48,8 +50,12 @@ export class PrismaCategoryRepository implements CategoryRepository {
     });
   }
 
-  update(userId: number, id: number, name: string): Promise<Category | null> {
-    return prisma.category.update({
+  async update(
+    userId: number,
+    id: number,
+    name: string
+  ): Promise<Category | null> {
+    return await prisma.category.update({
       where: {
         id,
         userId,
@@ -58,8 +64,8 @@ export class PrismaCategoryRepository implements CategoryRepository {
     });
   }
 
-  delete(userId: number, id: number): Promise<Category | null> {
-    return prisma.category.delete({
+  async delete(userId: number, id: number): Promise<Category | null> {
+    return await prisma.category.delete({
       where: {
         id,
         userId,
