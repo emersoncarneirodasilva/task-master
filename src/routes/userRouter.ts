@@ -6,6 +6,7 @@ const router = Router();
 
 router.post("/login", userController.login);
 router.post("/users", userController.create);
+router.get("/users", AuthMiddleware.handle, userController.getUser);
 router.put("/users", AuthMiddleware.handle, userController.updateUser);
 router.patch(
   "/users/change-password",

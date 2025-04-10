@@ -31,13 +31,13 @@ export class UserService {
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
-      throw new HttpError("Usuário não encontrado!", 404);
+      throw new HttpError("Usuário ou senha inválido!", 404);
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new HttpError("Senha inválida!", 401);
+      throw new HttpError("Usuário ou senha inválido!", 401);
     }
 
     const token = jwt.sign(
@@ -56,6 +56,18 @@ export class UserService {
         email: user.email,
       },
     };
+  }
+
+  async getUserById(id: number) {
+    const user = await this.userRepository.findById(id);
+
+    if (!user) {
+      throw new HttpError("Usuário não encontrado!", 404);
+    }
+
+    const { password, ...safeUser } = user;
+
+    return safeUser;
   }
 
   async updateProfile(

@@ -3,7 +3,12 @@ import { z } from "zod";
 export const CreateUserRequestSchema = z.object({
   name: z.string().min(3).max(50),
   email: z.string().email(),
-  password: z.string().min(6).max(20),
+  password: z.string().min(6).max(50),
+});
+
+export const LoginUserRequestSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6).max(50),
 });
 
 export const UpdateUserRequestSchema = z.object({
@@ -12,6 +17,6 @@ export const UpdateUserRequestSchema = z.object({
 });
 
 export const ChangePasswordRequestSchema = z.object({
-  newPassword: z.string().min(6).max(20),
-  oldPassword: z.string().min(6).max(20),
+  newPassword: z.string().min(6).max(50),
+  oldPassword: z.string().min(6).max(50),
 });

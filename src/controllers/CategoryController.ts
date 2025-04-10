@@ -1,5 +1,6 @@
 import { Handler } from "express";
 import { CategoryService } from "../services/CategoryService";
+import { CreateAndUpdateCategoryRequestSchema } from "./schemas/CategoryRequestSchema";
 
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
@@ -7,14 +8,14 @@ export class CategoryController {
   createCategory: Handler = async (req, res, next) => {
     try {
       const userId = req.user!.userId;
-      const body = req.body; // Validar com Zod depois
+      const body = CreateAndUpdateCategoryRequestSchema.parse(req.body);
 
-      const category = await this.categoryService.createCategory({
+      const newCategory = await this.categoryService.createCategory({
         ...body,
         userId,
       });
 
-      res.status(201).json(category);
+      res.status(201).json(newCategory);
     } catch (error) {
       next(error);
     }
@@ -52,15 +53,15 @@ export class CategoryController {
     try {
       const userId = req.user!.userId;
       const categoryId = Number(req.params.id);
-      const { name } = req.body; // Validar com Zod depois
+      const { name } = CreateAndUpdateCategoryRequestSchema.parse(req.body);
 
-      const category = await this.categoryService.updateCategory(
+      const updatedCategory = await this.categoryService.updateCategory(
         userId,
         categoryId,
         name
       );
 
-      res.status(200).json(category);
+      res.status(200).json(updatedCategory);
     } catch (error) {
       next(error);
     }
@@ -76,12 +77,10 @@ export class CategoryController {
         categoryId
       );
 
-      res
-        .status(204)
-        .json({
-          message: "Categoria deletada com sucesso!",
-          category: deletedCategory,
-        });
+      res.status(204).json({
+        message: "Categoria deletada com sucesso!",
+        category: deletedCategory,
+      });
     } catch (error) {
       next(error);
     }

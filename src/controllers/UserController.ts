@@ -3,6 +3,7 @@ import { UserService } from "../services/UserService";
 import {
   ChangePasswordRequestSchema,
   CreateUserRequestSchema,
+  LoginUserRequestSchema,
   UpdateUserRequestSchema,
 } from "./schemas/UserRequestSchema";
 
@@ -23,11 +24,23 @@ export class UserController {
 
   login: Handler = async (req, res, next) => {
     try {
-      const { email, password } = req.body;
+      const { email, password } = LoginUserRequestSchema.parse(req.body);
 
       const user = await this.userService.login(email, password);
 
       res.status(200).json({ message: "Usuário logado com sucesso!", user });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getUser: Handler = async (req, res, next) => {
+    try {
+      const userId = req.user!.userId;
+
+      const user = await this.userService.getUserById(userId);
+
+      res.status(200).json({ message: "Usuário encontrado!", user });
     } catch (error) {
       next(error);
     }

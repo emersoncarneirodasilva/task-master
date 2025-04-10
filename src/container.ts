@@ -1,11 +1,11 @@
 import { PrismaUserRepository } from "./repositories/prisma/PrismaUserRepository";
 import { PrismaTaskRepository } from "./repositories/prisma/PrismaTaskRepository";
+import { PrismaCategoryRepository } from "./repositories/prisma/PrismaCategoryRepository";
 import { UserService } from "./services/UserService";
 import { TaskService } from "./services/TaskService";
+import { CategoryService } from "./services/CategoryService";
 import { UserController } from "./controllers/UserController";
 import { TaskController } from "./controllers/TaskController";
-import { PrismaCategoryRepository } from "./repositories/prisma/PrismaCategoryRepository";
-import { CategoryService } from "./services/CategoryService";
 import { CategoryController } from "./controllers/CategoryController";
 
 export const userRepository = new PrismaUserRepository();

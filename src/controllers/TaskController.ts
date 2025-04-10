@@ -1,5 +1,9 @@
 import { Handler } from "express";
 import { TaskService } from "../services/TaskService";
+import {
+  CreateTaskRequestSchema,
+  UpdateTaskRequestSchema,
+} from "./schemas/TaskRequestSchema";
 
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
@@ -7,15 +11,16 @@ export class TaskController {
   createTask: Handler = async (req, res, next) => {
     try {
       const userId = req.user!.userId;
-      const { categoryName, categoryId, ...taskData } = req.body;
+      const { categoryName, categoryId, ...taskData } =
+        CreateTaskRequestSchema.parse(req.body);
 
-      const task = await this.taskService.createTask(userId, {
+      const newTask = await this.taskService.createTask(userId, {
         ...taskData,
         categoryName,
         categoryId,
       });
 
-      res.status(201).json(task);
+      res.status(201).json(newTask);
     } catch (error) {
       next(error);
     }
@@ -50,11 +55,15 @@ export class TaskController {
     try {
       const taskId = Number(req.params.id);
       const userId = req.user!.userId;
-      const body = req.body; // OBS: Lembrar de fazer validação com Zod
+      const body = UpdateTaskRequestSchema.parse(req.body);
 
-      const task = await this.taskService.updateTask(taskId, userId, body);
+      const updatedTask = await this.taskService.updateTask(
+        taskId,
+        userId,
+        body
+      );
 
-      res.status(200).json(task);
+      res.status(200).json(updatedTask);
     } catch (error) {
       next(error);
     }
