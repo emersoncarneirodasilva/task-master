@@ -162,4 +162,4 @@ Este projeto está licenciado sob a licença ISC.
 
 ## 👤 Autor
 
-Desenvolvido como parte de uma solução de gerenciamento de tarefas moderna e escalável.
+Desenvolvido como parte de uma solução de gerenciamento de tarefas moderna e escalável (Emerson Carneiro da Silva).
