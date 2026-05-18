@@ -11,7 +11,7 @@ import filterEnumValues from "../../utils/filterEnumValues";
 export class PrismaTaskRepository implements TaskRepository {
   async create(
     userId: number,
-    attributes: CreateTaskAttributes
+    attributes: CreateTaskAttributes,
   ): Promise<Task> {
     const { categoryId, categoryName, ...taskData } = attributes;
 
@@ -29,17 +29,17 @@ export class PrismaTaskRepository implements TaskRepository {
               },
             }
           : categoryId
-          ? {
-              connect: { id: categoryId },
-            }
-          : undefined,
+            ? {
+                connect: { id: categoryId },
+              }
+            : undefined,
       },
     });
   }
 
   async findAllByUserId(
     userId: number,
-    options: OptionsToSearchAndFilter
+    options: OptionsToSearchAndFilter,
   ): Promise<PaginatedTasks> {
     const { page = 1, perPage = 10, search, status, priority } = options || {};
 
@@ -56,7 +56,7 @@ export class PrismaTaskRepository implements TaskRepository {
         title: search ? { contains: search, mode: "insensitive" } : undefined,
         status: filteredStatus ? { in: filteredStatus } : undefined,
         priority: filteredPriority ? { in: filteredPriority } : undefined,
-      }).filter(([_, value]) => value !== undefined)
+      }).filter(([_, value]) => value !== undefined),
     );
 
     const [tasks, totalTasks] = await Promise.all([
@@ -83,23 +83,33 @@ export class PrismaTaskRepository implements TaskRepository {
   async update(
     id: number,
     userId: number,
-    attributes: Partial<CreateTaskAttributes>
+    attributes: Partial<CreateTaskAttributes>,
   ): Promise<Task | null> {
+    const task = await prisma.task.findUnique({
+      where: { id },
+    });
+
+    if (!task || task.userId !== userId) {
+      return null;
+    }
+
     return await prisma.task.update({
-      where: {
-        id: id,
-        userId: userId,
-      },
+      where: { id },
       data: attributes,
     });
   }
 
   async delete(id: number, userId: number): Promise<Task | null> {
+    const task = await prisma.task.findUnique({
+      where: { id },
+    });
+
+    if (!task || task.userId !== userId) {
+      return null;
+    }
+
     return await prisma.task.delete({
-      where: {
-        id: id,
-        userId: userId,
-      },
+      where: { id },
     });
   }
 }

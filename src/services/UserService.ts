@@ -5,7 +5,7 @@ import {
   CreateUserAttributes,
   UserRepository,
 } from "../repositories/contracts/UserRepository";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
@@ -16,7 +16,7 @@ export class UserService {
     if (userExists) {
       throw new HttpError(
         "Já existe um usuário cadastrado com esse e-mail!",
-        409
+        409,
       );
     }
 
@@ -45,7 +45,7 @@ export class UserService {
       process.env.JWT_SECRET!,
       {
         expiresIn: "1d",
-      }
+      },
     );
 
     return {
@@ -72,13 +72,13 @@ export class UserService {
 
   async updateProfile(
     id: number,
-    attributes: { name?: string; email?: string }
+    attributes: { name?: string; email?: string },
   ) {
     try {
       const updatedUser = await this.userRepository.update(id, attributes);
 
       return updatedUser;
-    } catch (error) {
+    } catch (error: any) {
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === "P2025"
@@ -116,7 +116,7 @@ export class UserService {
       const user = await this.userRepository.delete(id);
 
       return user;
-    } catch (error) {
+    } catch (error: any) {
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === "P2025"

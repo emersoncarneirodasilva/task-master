@@ -28,7 +28,7 @@ export class PrismaCategoryRepository implements CategoryRepository {
   }
 
   async findByName(
-    attributes: CreateCategoryAttributes
+    attributes: CreateCategoryAttributes,
   ): Promise<Category | null> {
     return await prisma.category.findFirst({
       where: {
@@ -53,23 +53,33 @@ export class PrismaCategoryRepository implements CategoryRepository {
   async update(
     userId: number,
     id: number,
-    name: string
+    name: string,
   ): Promise<Category | null> {
+    const category = await prisma.category.findUnique({
+      where: { id },
+    });
+
+    if (!category || category.userId !== userId) {
+      return null;
+    }
+
     return await prisma.category.update({
-      where: {
-        id,
-        userId,
-      },
+      where: { id },
       data: { name },
     });
   }
 
   async delete(userId: number, id: number): Promise<Category | null> {
+    const category = await prisma.category.findUnique({
+      where: { id },
+    });
+
+    if (!category || category.userId !== userId) {
+      return null;
+    }
+
     return await prisma.category.delete({
-      where: {
-        id,
-        userId,
-      },
+      where: { id },
     });
   }
 }

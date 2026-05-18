@@ -1,4 +1,4 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { HttpError } from "../errors/HttpError";
 import {
   CategoryRepository,
@@ -9,9 +9,8 @@ export class CategoryService {
   constructor(private readonly categoryRepository: CategoryRepository) {}
 
   async createCategory(attributes: CreateCategoryAttributes) {
-    const existingCategory = await this.categoryRepository.findByName(
-      attributes
-    );
+    const existingCategory =
+      await this.categoryRepository.findByName(attributes);
 
     if (existingCategory) {
       throw new HttpError("Categoria já existe!", 409);
@@ -44,8 +43,12 @@ export class CategoryService {
     try {
       const category = await this.categoryRepository.update(userId, id, name);
 
+      if (!category) {
+        throw new HttpError("Categoria não encontrada!", 404);
+      }
+
       return category;
-    } catch (error) {
+    } catch (error: any) {
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === "P2025"
@@ -60,8 +63,12 @@ export class CategoryService {
     try {
       const category = await this.categoryRepository.delete(userId, id);
 
+      if (!category) {
+        throw new HttpError("Categoria não encontrada!", 404);
+      }
+
       return category;
-    } catch (error) {
+    } catch (error: any) {
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === "P2025"

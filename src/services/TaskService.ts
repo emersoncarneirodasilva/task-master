@@ -1,4 +1,4 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { HttpError } from "../errors/HttpError";
 import {
   CreateTaskAttributes,
@@ -39,7 +39,7 @@ export class TaskService {
   async updateTask(
     id: number,
     userId: number,
-    attributes: Partial<CreateTaskAttributes>
+    attributes: Partial<CreateTaskAttributes>,
   ) {
     // Se "deadline" estiver presente nos atributos e for uma string, converta para Date
     if (attributes.deadline && typeof attributes.deadline === "string") {
@@ -49,8 +49,12 @@ export class TaskService {
     try {
       const task = await this.taskRepository.update(id, userId, attributes);
 
+      if (!task) {
+        throw new HttpError("Tarefa não encontrada!", 404);
+      }
+
       return task;
-    } catch (error) {
+    } catch (error: any) {
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === "P2025"
@@ -64,8 +68,13 @@ export class TaskService {
   async deleteTask(id: number, userId: number) {
     try {
       const task = await this.taskRepository.delete(id, userId);
+
+      if (!task) {
+        throw new HttpError("Tarefa não encontrada!", 404);
+      }
+
       return task;
-    } catch (error) {
+    } catch (error: any) {
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === "P2025"
