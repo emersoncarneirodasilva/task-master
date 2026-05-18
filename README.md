@@ -18,15 +18,16 @@ Task Master é construído seguindo padrões estabelecidos de arquitetura de sof
 
 ## 🛠️ Stack Tecnológico
 
-| Tecnologia                                       | Versão | Propósito                            |
-| ------------------------------------------------ | ------ | ------------------------------------ |
-| [TypeScript](https://www.typescriptlang.org/)    | 5.8.3  | Tipagem estática e segurança de tipo |
-| [Express](https://expressjs.com/)                | 5.1.0  | Framework web minimalista            |
-| [Prisma ORM](https://www.prisma.io/)             | 6.5.0  | ORM moderno com Type Safety          |
-| [PostgreSQL](https://www.postgresql.org/)        | -      | Banco de dados relacional            |
-| [Zod](https://zod.dev/)                          | 3.24.2 | Validação de schemas em TypeScript   |
-| [JWT](https://jwt.io/)                           | 9.0.2  | Autenticação com tokens              |
-| [BcryptJS](https://github.com/dcodeIO/bcrypt.js) | 3.0.2  | Hash seguro de senhas                |
+| Tecnologia                                                             | Versão | Propósito                                  |
+| ---------------------------------------------------------------------- | ------ | ------------------------------------------ |
+| [TypeScript](https://www.typescriptlang.org/)                          | 5.9.3  | Tipagem estática e segurança de tipo       |
+| [Express](https://expressjs.com/)                                      | 5.2.1  | Framework web minimalista                  |
+| [Prisma ORM](https://www.prisma.io/)                                   | 7.8.0  | ORM moderno com Type Safety                |
+| [@prisma/adapter-pg](https://www.npmjs.com/package/@prisma/adapter-pg) | 7.8.0  | Adaptador de driver PostgreSQL para Prisma |
+| [PostgreSQL](https://www.postgresql.org/)                              | -      | Banco de dados relacional                  |
+| [Zod](https://zod.dev/)                                                | 4.4.3  | Validação de schemas em TypeScript         |
+| [JWT](https://jwt.io/)                                                 | 9.0.3  | Autenticação com tokens                    |
+| [BcryptJS](https://github.com/dcodeIO/bcrypt.js)                       | 3.0.3  | Hash seguro de senhas                      |
 
 ## 📊 Modelo de Dados
 
@@ -67,35 +68,43 @@ Task Master é construído seguindo padrões estabelecidos de arquitetura de sof
    cd task-master
    ```
 
-2. **Instale as dependências**
+2. **Instale as dependências atualizadas**
 
    ```bash
    npm install
    ```
 
-3. **Configure as variáveis de ambiente**
+   Isso instalará todas as dependências listadas em `package.json`, incluindo o adaptador Prisma para PostgreSQL (`@prisma/adapter-pg`).
+
+3. **Gere o cliente Prisma**
+
+   ```bash
+   npm run prisma:generate
+   ```
+
+4. **Configure as variáveis de ambiente**
 
    Crie um arquivo `.env` na raiz do projeto:
 
    ```env
-   DATABASE_URL="postgresql://user:password@localhost:5432/task_master"
+   DATABASE_URL="postgresql://user:password@localhost:5432/taskmaster?schema=public"
    JWT_SECRET="sua_chave_secreta_aqui"
    NODE_ENV="development"
-   PORT=3000
+   PORT=5000
    ```
 
-4. **Execute as migrações do banco de dados**
+5. **Execute as migrações do banco de dados**
 
    ```bash
    npx prisma migrate dev
    ```
 
-5. **Inicie o servidor de desenvolvimento**
+6. **Inicie o servidor de desenvolvimento**
    ```bash
    npm run dev
    ```
 
-O servidor estará disponível em `http://localhost:3000`
+O servidor estará disponível em `http://localhost:5000`
 
 ## 📜 Scripts Disponíveis
 
